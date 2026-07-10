@@ -14,6 +14,14 @@ export default function TabLayout() {
 			<Stack>
 				<Stack.Protected guard={true}>
 					<Stack.Screen name="(public)" options={{ headerShown: false }} />
+					<Stack.Screen
+						name="(public)/signup"
+						options={{
+							headerTitle: "Sign Up",
+							headerBackButtonDisplayMode: "minimal",
+							headerBackTitle: "Sign In",
+						}}
+					/>
 				</Stack.Protected>
 			</Stack>
 		</ThemeProvider>

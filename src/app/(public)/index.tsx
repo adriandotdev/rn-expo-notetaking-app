@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import {
 	Keyboard,
 	KeyboardAvoidingView,
@@ -11,6 +12,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginPage() {
+	const router = useRouter();
+
+	const handleSignUpRedirection = () => {
+		router.push("/(public)/signup");
+	};
+
 	return (
 		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 			<View style={{ flex: 1 }}>
@@ -38,9 +45,7 @@ export default function LoginPage() {
 						behavior={Platform.OS === "ios" ? "padding" : "height"}
 					>
 						<View style={{ gap: 8 }}>
-							<Text style={{ fontSize: 16, fontWeight: 600, color: "#6663b5" }}>
-								Username
-							</Text>
+							{/* <Text style={{ fontSize: 16, fontWeight: 600 }}>Username</Text> */}
 							<TextInput
 								style={{
 									borderWidth: 1,
@@ -49,15 +54,13 @@ export default function LoginPage() {
 									borderColor: "#cce7cd",
 								}}
 								placeholder="Username"
-								autoCapitalize="words"
-								keyboardType="email-address"
+								autoCapitalize="none"
+								autoCorrect={false}
 							/>
 						</View>
 
 						<View style={{ gap: 8 }}>
-							<Text style={{ fontSize: 16, fontWeight: 600, color: "#6663b5" }}>
-								Password
-							</Text>
+							{/* <Text style={{ fontSize: 16, fontWeight: 600 }}>Password</Text> */}
 							<TextInput
 								style={{
 									borderWidth: 1,
@@ -85,6 +88,19 @@ export default function LoginPage() {
 							</Text>
 						</Pressable>
 					</KeyboardAvoidingView>
+
+					<View
+						style={{ flexDirection: "row", justifyContent: "center", gap: 8 }}
+					>
+						<Text style={{ fontWeight: 600, fontSize: 16 }}>
+							Don't have an account yet?
+						</Text>
+						<TouchableWithoutFeedback onPress={handleSignUpRedirection}>
+							<Text style={{ fontWeight: 600, fontSize: 16, color: "#63b566" }}>
+								Sign Up
+							</Text>
+						</TouchableWithoutFeedback>
+					</View>
 				</SafeAreaView>
 			</View>
 		</TouchableWithoutFeedback>
