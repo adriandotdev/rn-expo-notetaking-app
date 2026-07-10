@@ -1,7 +1,7 @@
-export const primary = "#003049";
-export const secondary = "#fcbf49";
-export const accent = "#eae2b7";
-export const highlight = "#f77f00";
+export const primary = "#d5bdaf";
+export const secondary = "#d6ccc2";
+export const accent = "#f5ebe0";
+export const highlight = "#78290f";
 export const error = "#d62828";
 
 export enum COLORS {

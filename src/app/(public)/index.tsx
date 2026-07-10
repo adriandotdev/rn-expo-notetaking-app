@@ -39,7 +39,7 @@ export default function LoginPage() {
 							textAlign: "center",
 						}}
 					>
-						Take Your Notes
+						Prayers
 					</Text>
 					<KeyboardAvoidingView
 						style={{ gap: 24 }}
@@ -78,7 +78,7 @@ export default function LoginPage() {
 
 						<Pressable
 							style={{
-								backgroundColor: "#003049",
+								backgroundColor: COLORS.PRIMARY,
 								padding: 16,
 								borderRadius: 8,
 								alignItems: "center",
@@ -93,7 +93,9 @@ export default function LoginPage() {
 					<View
 						style={{ flexDirection: "row", justifyContent: "center", gap: 8 }}
 					>
-						<Text style={{ fontWeight: 600, fontSize: 16 }}>
+						<Text
+							style={{ fontWeight: 600, fontSize: 16, color: COLORS.SECONDARY }}
+						>
 							Don't have an account yet?
 						</Text>
 						<TouchableWithoutFeedback onPress={handleSignUpRedirection}>

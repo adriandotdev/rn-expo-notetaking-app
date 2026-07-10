@@ -91,6 +91,45 @@ export default function SignUp() {
 						autoCorrect={false}
 						secureTextEntry
 					/>
+
+					<Pressable
+						onPress={() => {
+							router.push("/otp");
+						}}
+						style={({ pressed }) => ({
+							backgroundColor: COLORS.PRIMARY,
+							padding: 16,
+							borderRadius: 8,
+							alignItems: "center",
+							marginTop: 18,
+							opacity: pressed ? 0.85 : 1,
+							transform: [{ scale: pressed ? 0.98 : 1 }],
+						})}
+						android_ripple={{ color: `${COLORS.SECONDARY}15` }}
+					>
+						<Text style={{ fontSize: 18, fontWeight: "600", color: "white" }}>
+							Create account
+						</Text>
+					</Pressable>
+
+					<View
+						style={{ flexDirection: "row", justifyContent: "center", gap: 8 }}
+					>
+						<Text style={{ fontWeight: 600, fontSize: 16 }}>
+							Already have an account?
+						</Text>
+						<TouchableWithoutFeedback onPress={handleLoginRedirection}>
+							<Text
+								style={{
+									fontWeight: 600,
+									fontSize: 16,
+									color: COLORS.HIGHLIGHT,
+								}}
+							>
+								Sign In
+							</Text>
+						</TouchableWithoutFeedback>
+					</View>
 					{/* <View
 						style={{
 							gap: 8,
@@ -162,42 +201,6 @@ export default function SignUp() {
 							</Column>
 						</AndroidHost>
 					)} */}
-
-					<Pressable
-						onPress={() => {
-							router.push("/otp");
-						}}
-						style={{
-							backgroundColor: COLORS.PRIMARY,
-							padding: 16,
-							borderRadius: 8,
-							alignItems: "center",
-							marginTop: 18,
-						}}
-					>
-						<Text style={{ fontSize: 18, fontWeight: "600", color: "white" }}>
-							Create account
-						</Text>
-					</Pressable>
-
-					<View
-						style={{ flexDirection: "row", justifyContent: "center", gap: 8 }}
-					>
-						<Text style={{ fontWeight: 600, fontSize: 16 }}>
-							Already have an account?
-						</Text>
-						<TouchableWithoutFeedback onPress={handleLoginRedirection}>
-							<Text
-								style={{
-									fontWeight: 600,
-									fontSize: 16,
-									color: COLORS.HIGHLIGHT,
-								}}
-							>
-								Sign In
-							</Text>
-						</TouchableWithoutFeedback>
-					</View>
 				</KeyboardAvoidingView>
 			</View>
 		</TouchableWithoutFeedback>
