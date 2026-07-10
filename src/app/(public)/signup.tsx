@@ -9,6 +9,7 @@ import {
 	View,
 } from "react-native";
 
+import { COLORS } from "@/constants/colors";
 import { useRouter } from "expo-router";
 export default function SignUp() {
 	// const [showDatePicker, setShowDatePicker] = useState(false);
@@ -23,8 +24,7 @@ export default function SignUp() {
 		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 			<View
 				style={{
-					padding: 16,
-					paddingTop: 24,
+					padding: 24,
 					backgroundColor: "white",
 					flex: 1,
 				}}
@@ -33,7 +33,7 @@ export default function SignUp() {
 					style={{
 						fontSize: 32,
 						fontWeight: 600,
-						color: "#63b566",
+						color: COLORS.HIGHLIGHT,
 					}}
 				>
 					Create your account
@@ -48,7 +48,7 @@ export default function SignUp() {
 							borderWidth: 1,
 							padding: 16,
 							borderRadius: 8,
-							borderColor: "#cce7cd",
+							borderColor: COLORS.ACCENT,
 						}}
 						placeholder="Name"
 						autoCorrect={false}
@@ -59,7 +59,7 @@ export default function SignUp() {
 							borderWidth: 1,
 							padding: 16,
 							borderRadius: 8,
-							borderColor: "#cce7cd",
+							borderColor: COLORS.ACCENT,
 						}}
 						placeholder="Username"
 						autoCapitalize="none"
@@ -71,7 +71,7 @@ export default function SignUp() {
 							borderWidth: 1,
 							padding: 16,
 							borderRadius: 8,
-							borderColor: "#cce7cd",
+							borderColor: COLORS.ACCENT,
 						}}
 						placeholder="Password"
 						autoCapitalize="none"
@@ -84,7 +84,7 @@ export default function SignUp() {
 							borderWidth: 1,
 							padding: 16,
 							borderRadius: 8,
-							borderColor: "#cce7cd",
+							borderColor: COLORS.ACCENT,
 						}}
 						placeholder="Confirm Password"
 						autoCapitalize="none"
@@ -164,8 +164,11 @@ export default function SignUp() {
 					)} */}
 
 					<Pressable
+						onPress={() => {
+							router.push("/otp");
+						}}
 						style={{
-							backgroundColor: "#63b566",
+							backgroundColor: COLORS.PRIMARY,
 							padding: 16,
 							borderRadius: 8,
 							alignItems: "center",
@@ -184,7 +187,13 @@ export default function SignUp() {
 							Already have an account?
 						</Text>
 						<TouchableWithoutFeedback onPress={handleLoginRedirection}>
-							<Text style={{ fontWeight: 600, fontSize: 16, color: "#63b566" }}>
+							<Text
+								style={{
+									fontWeight: 600,
+									fontSize: 16,
+									color: COLORS.HIGHLIGHT,
+								}}
+							>
 								Sign In
 							</Text>
 						</TouchableWithoutFeedback>

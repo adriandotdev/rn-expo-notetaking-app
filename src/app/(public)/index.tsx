@@ -1,3 +1,4 @@
+import { COLORS } from "@/constants/colors";
 import { useRouter } from "expo-router";
 import {
 	Keyboard,
@@ -26,15 +27,15 @@ export default function LoginPage() {
 						flex: 1,
 						backgroundColor: "white",
 						justifyContent: "center",
-						padding: 20,
+						padding: 24,
 						gap: 16,
 					}}
 				>
 					<Text
 						style={{
 							fontSize: 32,
-							fontWeight: 600,
-							color: "#63b566",
+							fontWeight: 800,
+							color: COLORS.HIGHLIGHT,
 							textAlign: "center",
 						}}
 					>
@@ -51,7 +52,7 @@ export default function LoginPage() {
 									borderWidth: 1,
 									padding: 16,
 									borderRadius: 8,
-									borderColor: "#cce7cd",
+									borderColor: COLORS.ACCENT,
 								}}
 								placeholder="Username"
 								autoCapitalize="none"
@@ -66,7 +67,7 @@ export default function LoginPage() {
 									borderWidth: 1,
 									padding: 16,
 									borderRadius: 8,
-									borderColor: "#cce7cd",
+									borderColor: COLORS.ACCENT,
 								}}
 								placeholder="Password"
 								autoCapitalize="words"
@@ -77,7 +78,7 @@ export default function LoginPage() {
 
 						<Pressable
 							style={{
-								backgroundColor: "#63b566",
+								backgroundColor: "#003049",
 								padding: 16,
 								borderRadius: 8,
 								alignItems: "center",
@@ -96,7 +97,13 @@ export default function LoginPage() {
 							Don't have an account yet?
 						</Text>
 						<TouchableWithoutFeedback onPress={handleSignUpRedirection}>
-							<Text style={{ fontWeight: 600, fontSize: 16, color: "#63b566" }}>
+							<Text
+								style={{
+									fontWeight: 600,
+									fontSize: 16,
+									color: COLORS.HIGHLIGHT,
+								}}
+							>
 								Sign Up
 							</Text>
 						</TouchableWithoutFeedback>

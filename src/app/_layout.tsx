@@ -22,6 +22,13 @@ export default function TabLayout() {
 							headerBackTitle: "Sign In",
 						}}
 					/>
+					<Stack.Screen
+						name="(public)/otp"
+						options={{
+							headerShown: false,
+							animation: "ios_from_right",
+						}}
+					/>
 				</Stack.Protected>
 			</Stack>
 		</ThemeProvider>
