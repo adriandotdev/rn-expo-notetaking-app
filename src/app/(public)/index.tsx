@@ -62,12 +62,13 @@ export default function LoginPage() {
 					<Text
 						style={{
 							fontSize: 32,
-							fontWeight: 800,
 							color: COLORS.HIGHLIGHT,
 							textAlign: "center",
+							fontFamily: "Lora_600SemiBold",
+							marginBottom: 16,
 						}}
 					>
-						Prayers
+						Prayer Haven
 					</Text>
 					<KeyboardAvoidingView
 						style={{ gap: 24 }}

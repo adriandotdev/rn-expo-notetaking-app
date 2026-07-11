@@ -18,7 +18,7 @@ type AuthProviderProps = {
 };
 
 export function AuthProvider({ children }: AuthProviderProps) {
-	const [auth, setAuth] = useState(true);
+	const [auth, setAuth] = useState(false);
 
 	const value = useMemo(() => ({ auth, setAuth }), [auth]);
 

@@ -14,7 +14,11 @@ export default function Otp() {
 			}}
 		>
 			<Text
-				style={{ fontSize: 32, fontWeight: "600", color: COLORS.HIGHLIGHT }}
+				style={{
+					fontSize: 32,
+					fontFamily: "Lora_600SemiBold",
+					color: COLORS.HIGHLIGHT,
+				}}
 			>
 				OTP Verification
 			</Text>

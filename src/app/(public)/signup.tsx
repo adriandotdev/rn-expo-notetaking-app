@@ -70,7 +70,7 @@ export default function SignUp() {
 				<Text
 					style={{
 						fontSize: 32,
-						fontWeight: 600,
+						fontFamily: "Lora_600SemiBold",
 						color: COLORS.HIGHLIGHT,
 					}}
 				>
