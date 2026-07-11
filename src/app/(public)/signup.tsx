@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Keyboard,
 	KeyboardAvoidingView,
 	Platform,
@@ -10,16 +11,53 @@ import {
 } from "react-native";
 
 import { COLORS } from "@/constants/colors";
+import { useSignUpMutation } from "@/mutations/auth";
 import { useRouter } from "expo-router";
-export default function SignUp() {
-	// const [showDatePicker, setShowDatePicker] = useState(false);
-	// const [selectedDate, setSelectedDate] = useState(new Date());
+import { useState } from "react";
 
+export default function SignUp() {
 	const router = useRouter();
+	const [name, setName] = useState("");
+	const [username, setUsername] = useState("");
+	const [password, setPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
 
 	const handleLoginRedirection = () => {
 		router.replace("/(public)");
 	};
+
+	const signUpMutation = useSignUpMutation({
+		onSuccess: (data) => {
+			Alert.alert("Account created", data.message ?? "Signup successful.", [
+				{ text: "OK", onPress: () => router.push("/(public)/otp") },
+			]);
+		},
+		onError: (error: Error) => {
+			Alert.alert("Signup failed", error.message);
+		},
+	});
+
+	const handleSignUp = () => {
+		const trimmedName = name.trim();
+		const trimmedUsername = username.trim();
+
+		if (!trimmedName || !trimmedUsername || !password || !confirmPassword) {
+			Alert.alert("Missing details", "Enter name, username, and password.");
+			return;
+		}
+
+		if (password !== confirmPassword) {
+			Alert.alert("Password mismatch", "Passwords do not match.");
+			return;
+		}
+
+		signUpMutation.mutate({
+			name: trimmedName,
+			username: trimmedUsername,
+			password,
+		});
+	};
+
 	return (
 		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 			<View
@@ -52,6 +90,8 @@ export default function SignUp() {
 						}}
 						placeholder="Name"
 						autoCorrect={false}
+						value={name}
+						onChangeText={setName}
 					/>
 
 					<TextInput
@@ -64,6 +104,8 @@ export default function SignUp() {
 						placeholder="Username"
 						autoCapitalize="none"
 						autoCorrect={false}
+						value={username}
+						onChangeText={setUsername}
 					/>
 
 					<TextInput
@@ -77,6 +119,8 @@ export default function SignUp() {
 						autoCapitalize="none"
 						autoCorrect={false}
 						secureTextEntry
+						value={password}
+						onChangeText={setPassword}
 					/>
 
 					<TextInput
@@ -90,27 +134,36 @@ export default function SignUp() {
 						autoCapitalize="none"
 						autoCorrect={false}
 						secureTextEntry
+						value={confirmPassword}
+						onChangeText={setConfirmPassword}
 					/>
 
 					<Pressable
-						onPress={() => {
-							router.push("/otp");
-						}}
+						onPress={handleSignUp}
+						disabled={signUpMutation.isPending}
 						style={({ pressed }) => ({
 							backgroundColor: COLORS.PRIMARY,
 							padding: 16,
 							borderRadius: 8,
 							alignItems: "center",
 							marginTop: 18,
-							opacity: pressed ? 0.85 : 1,
+							opacity: signUpMutation.isPending ? 0.7 : pressed ? 0.85 : 1,
 							transform: [{ scale: pressed ? 0.98 : 1 }],
 						})}
 						android_ripple={{ color: `${COLORS.SECONDARY}15` }}
 					>
 						<Text style={{ fontSize: 18, fontWeight: "600", color: "white" }}>
-							Create account
+							{signUpMutation.isPending
+								? "Creating account..."
+								: "Create account"}
 						</Text>
 					</Pressable>
+
+					{signUpMutation.isError ? (
+						<Text style={{ color: "#b00020", textAlign: "center" }}>
+							{signUpMutation.error.message}
+						</Text>
+					) : null}
 
 					<View
 						style={{ flexDirection: "row", justifyContent: "center", gap: 8 }}
@@ -130,77 +183,6 @@ export default function SignUp() {
 							</Text>
 						</TouchableWithoutFeedback>
 					</View>
-					{/* <View
-						style={{
-							gap: 8,
-						}}
-					>
-						<Text style={{ fontSize: 18, fontWeight: "600" }}>
-							Date of Birth
-						</Text>
-						<DateTimePicker
-							presentation="dialog"
-							accentColor="#63b566"
-							value={selectedDate}
-							onValueChange={(event, selectedDate) => {
-								setSelectedDate(selectedDate);
-							}}
-							style={{ width: 100, marginLeft: 10 }}
-							mode="date"
-						/>
-					</View> */}
-					{/* {Platform.OS === "ios" ? (
-						<Host style={{ borderWidth: 1, borderColor: "red" }} matchContents>
-							<DatePicker
-								title="Date of Birth:"
-								modifiers={[
-									background("white"),
-									border({ color: "#cce7cd" }),
-									padding({ horizontal: 16, vertical: 16 }),
-									frame({ maxWidth: 500 }),
-									datePickerStyle("compact"),
-								]}
-							/>
-						</Host>
-					) : (
-						<AndroidHost
-							style={{
-								height: 100,
-								// borderWidth: 1,
-								// borderColor: "red",
-							}}
-						>
-							<Column verticalArrangement={{ spacedBy: 24 }}>
-								<RNHostView matchContents>
-									<Pressable
-										onPress={() => setShowDatePicker(true)}
-										style={{
-											backgroundColor: "white",
-											padding: 16,
-											borderWidth: 1,
-											borderColor: "#cce7cd",
-											borderRadius: 8,
-										}}
-									>
-										<Text style={{ fontSize: 16, fontWeight: 600 }}>
-											Date of Birth: {selectedDate.toLocaleDateString()}
-										</Text>
-									</Pressable>
-								</RNHostView>
-								{showDatePicker && (
-									<DatePickerDialog
-										onDateSelected={(date) => {
-											setSelectedDate(date);
-											setShowDatePicker(false);
-										}}
-										onDismissRequest={() => {
-											setShowDatePicker(false);
-										}}
-									/>
-								)}
-							</Column>
-						</AndroidHost>
-					)} */}
 				</KeyboardAvoidingView>
 			</View>
 		</TouchableWithoutFeedback>

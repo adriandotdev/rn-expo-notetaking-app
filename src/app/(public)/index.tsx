@@ -1,6 +1,9 @@
 import { COLORS } from "@/constants/colors";
+import { useLoginMutation } from "@/mutations/auth";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
+	Alert,
 	Keyboard,
 	KeyboardAvoidingView,
 	Platform,
@@ -14,9 +17,30 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginPage() {
 	const router = useRouter();
+	const [username, setUsername] = useState("");
+	const [password, setPassword] = useState("");
 
 	const handleSignUpRedirection = () => {
 		router.push("/(public)/signup");
+	};
+
+	const loginMutation = useLoginMutation({
+		onSuccess: (data) => {
+			Alert.alert("Signed in", data.message ?? "Login successful.");
+		},
+		onError: (error: Error) => {
+			Alert.alert("Sign in failed", error.message);
+		},
+	});
+
+	const handleSignIn = () => {
+		const trimmedUsername = username.trim();
+		if (!trimmedUsername || !password) {
+			Alert.alert("Missing details", "Enter both username and password.");
+			return;
+		}
+
+		loginMutation.mutate({ username: trimmedUsername, password });
 	};
 
 	return (
@@ -57,6 +81,8 @@ export default function LoginPage() {
 								placeholder="Username"
 								autoCapitalize="none"
 								autoCorrect={false}
+								value={username}
+								onChangeText={setUsername}
 							/>
 						</View>
 
@@ -70,24 +96,34 @@ export default function LoginPage() {
 									borderColor: COLORS.ACCENT,
 								}}
 								placeholder="Password"
-								autoCapitalize="words"
-								keyboardType="email-address"
+								autoCapitalize="none"
 								secureTextEntry
+								value={password}
+								onChangeText={setPassword}
 							/>
 						</View>
 
 						<Pressable
+							onPress={handleSignIn}
+							disabled={loginMutation.isPending}
 							style={{
 								backgroundColor: COLORS.PRIMARY,
 								padding: 16,
 								borderRadius: 8,
 								alignItems: "center",
+								opacity: loginMutation.isPending ? 0.7 : 1,
 							}}
 						>
 							<Text style={{ fontSize: 18, fontWeight: "600", color: "white" }}>
-								Sign In
+								{loginMutation.isPending ? "Signing In..." : "Sign In"}
 							</Text>
 						</Pressable>
+
+						{loginMutation.isError ? (
+							<Text style={{ color: "#b00020", textAlign: "center" }}>
+								{loginMutation.error.message}
+							</Text>
+						) : null}
 					</KeyboardAvoidingView>
 
 					<View
