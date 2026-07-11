@@ -1,5 +1,6 @@
 import { COLORS } from "@/constants/colors";
 import { useLoginMutation } from "@/mutations/auth";
+import { useAuth } from "@/providers/auth-provider";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -19,6 +20,7 @@ export default function LoginPage() {
 	const router = useRouter();
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const auth = useAuth();
 
 	const handleSignUpRedirection = () => {
 		router.push("/(public)/signup");
@@ -26,6 +28,8 @@ export default function LoginPage() {
 
 	const loginMutation = useLoginMutation({
 		onSuccess: (data) => {
+			auth.setAuth(true);
+			router.replace("/(protected)/prayers");
 			Alert.alert("Signed in", data.message ?? "Login successful.");
 		},
 		onError: (error: Error) => {
