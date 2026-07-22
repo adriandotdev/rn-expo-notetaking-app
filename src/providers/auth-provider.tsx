@@ -9,6 +9,8 @@ import {
 type AuthContextValue = {
 	auth: boolean;
 	setAuth: (value: boolean) => void;
+	accessToken: string;
+	setAccessToken: (value: string) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -18,9 +20,13 @@ type AuthProviderProps = {
 };
 
 export function AuthProvider({ children }: AuthProviderProps) {
-	const [auth, setAuth] = useState(false);
+	const [auth, setAuth] = useState(true);
+	const [accessToken, setAccessToken] = useState("");
 
-	const value = useMemo(() => ({ auth, setAuth }), [auth]);
+	const value = useMemo(
+		() => ({ auth, setAuth, accessToken, setAccessToken }),
+		[auth, accessToken],
+	);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

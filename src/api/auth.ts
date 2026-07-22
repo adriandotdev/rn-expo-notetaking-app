@@ -6,7 +6,8 @@ export type LoginPayload = {
 };
 
 export type LoginResponse = {
-	token?: string;
+	accessToken: string;
+	refreshToken: string;
 	message?: string;
 };
 

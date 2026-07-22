@@ -1,7 +1,9 @@
 import { COLORS } from "@/constants/colors";
+import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function Prayers() {
+	const router = useRouter();
 	const todayLabel = new Date().toLocaleDateString("en-US", {
 		weekday: "long",
 		month: "short",
@@ -18,6 +20,10 @@ export default function Prayers() {
 		"Guidance",
 	];
 
+	const handleOpenCreateTask = () => {
+		router.push("/prayers/create");
+	};
+
 	return (
 		<SafeAreaView style={styles.container}>
 			<View style={styles.headerRow}>
@@ -26,7 +32,7 @@ export default function Prayers() {
 					<Text style={styles.headerDate}>{todayLabel}</Text>
 				</View>
 
-				<Pressable style={styles.headerAction}>
+				<Pressable onPress={handleOpenCreateTask} style={styles.headerAction}>
 					<Text style={styles.headerActionText}>+</Text>
 				</Pressable>
 			</View>

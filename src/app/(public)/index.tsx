@@ -28,9 +28,12 @@ export default function LoginPage() {
 
 	const loginMutation = useLoginMutation({
 		onSuccess: (data) => {
-			auth.setAuth(true);
-			router.replace("/(protected)/prayers");
-			Alert.alert("Signed in", data.message ?? "Login successful.");
+			if (data.accessToken) {
+				auth.setAuth(true);
+				auth.setAccessToken(data.accessToken);
+				router.replace("/(protected)/prayers");
+				Alert.alert("Signed in", data.message ?? "Login successful.");
+			}
 		},
 		onError: (error: Error) => {
 			Alert.alert("Sign in failed", error.message);
