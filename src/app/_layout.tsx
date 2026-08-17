@@ -4,6 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useColorScheme } from "react-native";
 
 import { AnimatedSplashOverlay } from "@/components/animated-icon";
+import { isLocalMode } from "@/config/local-mode";
 import { AuthProvider, useAuth } from "@/providers/auth-provider";
 
 import {
@@ -33,6 +34,7 @@ export default function RootLayout() {
 function AppNavigator() {
 	const colorScheme = useColorScheme();
 	const auth = useAuth();
+	const canAccessPrayers = isLocalMode || auth.auth;
 
 	const [loraFontsLoaded] = useFonts({
 		Lora_400Regular,
@@ -51,7 +53,7 @@ function AppNavigator() {
 		<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
 			<AnimatedSplashOverlay />
 			<Stack>
-				<Stack.Protected guard={!auth.auth}>
+				<Stack.Protected guard={!isLocalMode && !auth.auth}>
 					<Stack.Screen name="(public)" options={{ headerShown: false }} />
 					<Stack.Screen
 						name="(public)/signup"
@@ -70,7 +72,7 @@ function AppNavigator() {
 					/>
 				</Stack.Protected>
 
-				<Stack.Protected guard={auth.auth}>
+				<Stack.Protected guard={canAccessPrayers}>
 					<Stack.Screen
 						name="(protected)"
 						options={{ headerShown: false, animation: "ios_from_right" }}

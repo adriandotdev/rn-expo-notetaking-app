@@ -1,9 +1,13 @@
 import { COLORS } from "@/constants/colors";
+import { isLocalMode } from "@/config/local-mode";
+import { useLocalPrayersQuery } from "@/mutations/prayers";
 import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function Prayers() {
 	const router = useRouter();
+	const { data: localPrayers = [], error: localPrayersError, isLoading } =
+		useLocalPrayersQuery();
 	const todayLabel = new Date().toLocaleDateString("en-US", {
 		weekday: "long",
 		month: "short",
@@ -62,45 +66,74 @@ export default function Prayers() {
 				contentContainerStyle={styles.content}
 				showsVerticalScrollIndicator={false}
 			>
-				<Pressable
-					style={({ pressed }) => ({
-						...styles.prayerCardWrap,
-						transform: [{ scale: pressed ? 0.98 : 1 }],
-					})}
-				>
-					<View style={styles.prayerCardGlow} />
-					<View style={styles.prayerCard}>
-						<View style={styles.prayerTopRow}>
-							<Text style={styles.prayerTitle}>Morning Prayer</Text>
-							{/* <View style={styles.timeChip}>
-								<Text style={styles.timeChipText}>06:30 AM</Text>
-							</View> */}
-						</View>
-
-						<Text style={styles.prayerBody}>
-							Lord, guide my thoughts, steady my heart, and help me walk in
-							kindness today.
+				{isLocalMode ? (
+					isLoading ? (
+						<Text style={styles.statusText}>Loading prayers…</Text>
+					) : localPrayersError ? (
+						<Text style={styles.errorText}>
+							Your saved prayers could not be loaded. Please try again.
 						</Text>
-
-						<View style={styles.prayerBottomRow}>
-							<View style={styles.metaChip}>
-								<Text style={styles.metaChipText}>Peace</Text>
-							</View>
-							<View style={styles.metaChip}>
-								<Text style={styles.metaChipText}>3 min</Text>
-							</View>
-							{/* <View style={styles.metaChipMuted}>
-								<Text style={styles.metaChipMutedText}>Reminder On</Text>
-							</View> */}
-
-							{/* <Pressable style={styles.doneButton}>
-								<Text style={styles.doneButtonText}>Done</Text>
-							</Pressable> */}
+					) : localPrayers.length === 0 ? (
+						<View style={styles.emptyState}>
+							<Text style={styles.emptyTitle}>No saved prayers yet</Text>
+							<Text style={styles.emptyText}>
+								Use the + button to write your first prayer. It will stay on this
+								device.
+							</Text>
 						</View>
-					</View>
-				</Pressable>
+					) : (
+						localPrayers.map((prayer) => (
+							<PrayerCard
+								key={prayer.id}
+								title={prayer.title}
+								text={prayer.text}
+								meta={new Date(prayer.createdAt).toLocaleDateString("en-US", {
+									month: "short",
+									day: "numeric",
+									year: "numeric",
+								})}
+							/>
+						))
+					)
+				) : (
+					<PrayerCard
+						title="Morning Prayer"
+						text="Lord, guide my thoughts, steady my heart, and help me walk in kindness today."
+						meta="Peace"
+					/>
+				)}
 			</ScrollView>
 		</SafeAreaView>
+	);
+}
+
+type PrayerCardProps = {
+	title: string;
+	text: string;
+	meta: string;
+};
+
+function PrayerCard({ title, text, meta }: PrayerCardProps) {
+	return (
+		<Pressable
+			style={({ pressed }) => ({
+				...styles.prayerCardWrap,
+				transform: [{ scale: pressed ? 0.98 : 1 }],
+			})}
+		>
+			<View style={styles.prayerCardGlow} />
+			<View style={styles.prayerCard}>
+				<View style={styles.prayerTopRow}>
+					<Text style={styles.prayerTitle}>{title}</Text>
+				</View>
+				<Text style={styles.prayerBody}>{text}</Text>
+				<View style={styles.prayerBottomRow}>
+					<View style={styles.metaChip}>
+						<Text style={styles.metaChipText}>{meta}</Text>
+					</View>
+				</View>
+			</View>
+		</Pressable>
 	);
 }
 
@@ -164,6 +197,36 @@ const styles = StyleSheet.create({
 		paddingTop: 16,
 		paddingBottom: 32,
 		gap: 14,
+	},
+	statusText: {
+		fontFamily: "Inter_400Regular",
+		fontSize: 15,
+		color: "#556274",
+	},
+	errorText: {
+		fontFamily: "Inter_400Regular",
+		fontSize: 15,
+		lineHeight: 22,
+		color: "#B00020",
+	},
+	emptyState: {
+		borderRadius: 20,
+		padding: 20,
+		backgroundColor: "#FFFCF7",
+		borderWidth: 1,
+		borderColor: "#E9DED1",
+	},
+	emptyTitle: {
+		fontFamily: "Lora_600SemiBold",
+		fontSize: 20,
+		color: "#5F3A26",
+	},
+	emptyText: {
+		marginTop: 8,
+		fontFamily: "Inter_400Regular",
+		fontSize: 15,
+		lineHeight: 22,
+		color: "#556274",
 	},
 	prayerCardWrap: {
 		position: "relative",

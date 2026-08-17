@@ -1,7 +1,12 @@
+import { useCreatePrayerMutation } from "@/mutations/prayers";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+	ActivityIndicator,
+	Alert,
 	KeyboardAvoidingView,
 	Platform,
+	Pressable,
 	ScrollView,
 	StyleSheet,
 	Text,
@@ -13,6 +18,26 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function CreatePrayerScreen() {
 	const [title, setTitle] = useState("");
 	const [prayer, setPrayer] = useState("");
+
+	const { mutate: createPrayer, isPending } = useCreatePrayerMutation();
+
+	const router = useRouter();
+
+	function handleSubmit() {
+		createPrayer(
+			{ text: prayer, title },
+			{
+				onSuccess: () => {
+					setTitle("");
+					setPrayer("");
+					router.replace("/prayers");
+				},
+				onError: (error: Error) => {
+					Alert.alert("Unable to save prayer", error.message);
+				},
+			},
+		);
+	}
 
 	return (
 		<SafeAreaView
@@ -60,6 +85,28 @@ export default function CreatePrayerScreen() {
 						/>
 					</View>
 				</ScrollView>
+				<Pressable
+					onPress={handleSubmit}
+					disabled={
+						isPending ||
+						title.trim().length === 0 ||
+						prayer.trim().length === 0
+					}
+					style={({ pressed }) => [
+						styles.submitButton,
+						(isPending ||
+							title.trim().length === 0 ||
+							prayer.trim().length === 0) &&
+							styles.submitButtonDisabled,
+						pressed && styles.submitButtonPressed,
+					]}
+				>
+					{isPending ? (
+						<ActivityIndicator color="#FFFFFF" />
+					) : (
+						<Text style={styles.submitButtonText}>Save Prayer</Text>
+					)}
+				</Pressable>
 			</KeyboardAvoidingView>
 		</SafeAreaView>
 	);
@@ -118,5 +165,22 @@ const styles = StyleSheet.create({
 		// maxHeight: Platform.OS === "android" ? 800 : 500,
 		paddingTop: 12,
 		paddingBottom: 40,
+	},
+	submitButton: {
+		backgroundColor: "#5F3A26",
+		borderRadius: 8,
+		paddingVertical: 14,
+		alignItems: "center",
+	},
+	submitButtonDisabled: {
+		opacity: 0.5,
+	},
+	submitButtonPressed: {
+		opacity: 0.8,
+	},
+	submitButtonText: {
+		fontSize: 16,
+		fontFamily: "Inter_600SemiBold",
+		color: "#FFFFFF",
 	},
 });

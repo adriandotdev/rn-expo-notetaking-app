@@ -25,6 +25,16 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
+### Local-only prayer mode
+
+To temporarily use Prayer Haven without sign-in or API requests, start the app with local mode enabled:
+
+```bash
+EXPO_PUBLIC_LOCAL_MODE=true pnpm start
+```
+
+Prayers created in this mode are saved with AsyncStorage on the current device or browser only. Omit the variable (or set it to `false`) to restore the authenticated API flow.
+
 ## Get a fresh project
 
 When you're ready, run:

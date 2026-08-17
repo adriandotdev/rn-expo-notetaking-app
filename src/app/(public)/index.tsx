@@ -1,7 +1,8 @@
 import { COLORS } from "@/constants/colors";
+import { isLocalMode } from "@/config/local-mode";
 import { useLoginMutation } from "@/mutations/auth";
 import { useAuth } from "@/providers/auth-provider";
-import { useRouter } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import { useState } from "react";
 import {
 	Alert,
@@ -17,6 +18,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginPage() {
+	if (isLocalMode) {
+		return <Redirect href="/prayers" />;
+	}
+
+	return <LoginForm />;
+}
+
+function LoginForm() {
 	const router = useRouter();
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
