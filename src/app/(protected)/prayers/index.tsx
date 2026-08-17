@@ -1,13 +1,16 @@
-import { COLORS } from "@/constants/colors";
 import { isLocalMode } from "@/config/local-mode";
+import { COLORS } from "@/constants/colors";
 import { useLocalPrayersQuery } from "@/mutations/prayers";
 import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function Prayers() {
 	const router = useRouter();
-	const { data: localPrayers = [], error: localPrayersError, isLoading } =
-		useLocalPrayersQuery();
+	const {
+		data: localPrayers = [],
+		error: localPrayersError,
+		isLoading,
+	} = useLocalPrayersQuery();
 	const todayLabel = new Date().toLocaleDateString("en-US", {
 		weekday: "long",
 		month: "short",
@@ -26,6 +29,10 @@ export default function Prayers() {
 
 	const handleOpenCreateTask = () => {
 		router.push("/prayers/create");
+	};
+
+	const handleOpenPrayer = (id: string) => {
+		router.push({ pathname: "/prayers/[id]", params: { id } });
 	};
 
 	return (
@@ -77,8 +84,8 @@ export default function Prayers() {
 						<View style={styles.emptyState}>
 							<Text style={styles.emptyTitle}>No saved prayers yet</Text>
 							<Text style={styles.emptyText}>
-								Use the + button to write your first prayer. It will stay on this
-								device.
+								Use the + button to write your first prayer. It will stay on
+								this device.
 							</Text>
 						</View>
 					) : (
@@ -92,6 +99,7 @@ export default function Prayers() {
 									day: "numeric",
 									year: "numeric",
 								})}
+								onPress={() => handleOpenPrayer(prayer.id)}
 							/>
 						))
 					)
@@ -111,14 +119,19 @@ type PrayerCardProps = {
 	title: string;
 	text: string;
 	meta: string;
+	onPress?: () => void;
 };
 
-function PrayerCard({ title, text, meta }: PrayerCardProps) {
+function PrayerCard({ title, text, meta, onPress }: PrayerCardProps) {
 	return (
 		<Pressable
+			onPress={onPress}
+			disabled={!onPress}
+			accessibilityRole={onPress ? "button" : undefined}
+			accessibilityLabel={onPress ? `Open prayer: ${title}` : undefined}
 			style={({ pressed }) => ({
 				...styles.prayerCardWrap,
-				transform: [{ scale: pressed ? 0.98 : 1 }],
+				transform: [{ scale: pressed && onPress ? 0.98 : 1 }],
 			})}
 		>
 			<View style={styles.prayerCardGlow} />
