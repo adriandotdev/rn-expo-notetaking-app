@@ -52,7 +52,7 @@ export default function Prayers() {
 				consistently and intentionally.
 			</Text> */}
 
-			<View style={styles.badgeCard}>
+			{/* <View style={styles.badgeCard}>
 				<Text style={styles.badgeHeading}>Categories</Text>
 				<Text style={styles.badgeHint}>Tap a focus area for today</Text>
 
@@ -67,7 +67,7 @@ export default function Prayers() {
 						</View>
 					))}
 				</ScrollView>
-			</View>
+			</View> */}
 
 			<ScrollView
 				contentContainerStyle={styles.content}

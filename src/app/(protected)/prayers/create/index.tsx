@@ -1,4 +1,5 @@
 import { useCreatePrayerMutation } from "@/mutations/prayers";
+import {} from "@expo/ui";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -14,7 +15,6 @@ import {
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 export default function CreatePrayerScreen() {
 	const [title, setTitle] = useState("");
 	const [prayer, setPrayer] = useState("");
@@ -88,9 +88,7 @@ export default function CreatePrayerScreen() {
 				<Pressable
 					onPress={handleSubmit}
 					disabled={
-						isPending ||
-						title.trim().length === 0 ||
-						prayer.trim().length === 0
+						isPending || title.trim().length === 0 || prayer.trim().length === 0
 					}
 					style={({ pressed }) => [
 						styles.submitButton,

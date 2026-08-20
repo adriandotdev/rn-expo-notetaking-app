@@ -1,12 +1,20 @@
 import { COLORS } from "@/constants/colors";
-import { useLocalPrayersQuery } from "@/mutations/prayers";
+import {
+	useLocalPrayersQuery,
+	useUpdatePrayerMutation,
+} from "@/mutations/prayers";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import {
 	ActivityIndicator,
+	Alert,
+	KeyboardAvoidingView,
+	Platform,
 	Pressable,
 	ScrollView,
 	StyleSheet,
 	Text,
+	TextInput,
 	View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,6 +27,18 @@ export default function PrayerDetailScreen() {
 	const prayer = prayerId
 		? localPrayers.find((localPrayer) => localPrayer.id === prayerId)
 		: undefined;
+	const [title, setTitle] = useState("");
+	const [text, setText] = useState("");
+	const initializedPrayerId = useRef<string | undefined>(undefined);
+	const { mutate: updatePrayer, isPending } = useUpdatePrayerMutation();
+
+	useEffect(() => {
+		if (!prayer || initializedPrayerId.current === prayer.id) return;
+
+		setTitle(prayer.title);
+		setText(prayer.text);
+		initializedPrayerId.current = prayer.id;
+	}, [prayer]);
 
 	function returnToPrayers() {
 		if (router.canGoBack()) {
@@ -28,6 +48,25 @@ export default function PrayerDetailScreen() {
 
 		router.replace("/prayers");
 	}
+
+	function handleSave() {
+		if (!prayerId) return;
+
+		updatePrayer(
+			{ id: prayerId, title, text },
+			{
+				onSuccess: (updatedPrayer) => {
+					setTitle(updatedPrayer.title);
+					setText(updatedPrayer.text);
+				},
+				onError: (saveError: Error) => {
+					Alert.alert("Unable to save prayer", saveError.message);
+				},
+			},
+		);
+	}
+
+	const isSaveDisabled = isPending || !title.trim() || !text.trim();
 
 	return (
 		<SafeAreaView
@@ -76,24 +115,69 @@ export default function PrayerDetailScreen() {
 					</View>
 				</View>
 			) : (
-				<ScrollView
-					contentContainerStyle={styles.content}
-					showsVerticalScrollIndicator={false}
+				<KeyboardAvoidingView
+					behavior={Platform.OS === "ios" ? "padding" : "height"}
+					keyboardVerticalOffset={Platform.OS === "ios" ? 16 : 0}
+					style={styles.flex}
 				>
-					<Text style={styles.prayerTitle}>{prayer.title}</Text>
-					<View style={styles.metaChip}>
-						<Text style={styles.metaChipText}>
-							Saved{" "}
-							{new Date(prayer.createdAt).toLocaleDateString("en-US", {
-								month: "long",
-								day: "numeric",
-								year: "numeric",
-							})}
-						</Text>
-					</View>
-					<View style={styles.contentDivider} />
-					<Text style={styles.prayerBody}>{prayer.text}</Text>
-				</ScrollView>
+					<ScrollView
+						contentContainerStyle={styles.content}
+						showsVerticalScrollIndicator={false}
+						keyboardShouldPersistTaps="handled"
+						keyboardDismissMode={
+							Platform.OS === "ios" ? "interactive" : "on-drag"
+						}
+						automaticallyAdjustKeyboardInsets
+					>
+						<Text style={styles.label}>Title</Text>
+						<TextInput
+							value={title}
+							onChangeText={setTitle}
+							placeholder="Enter prayer title"
+							placeholderTextColor="#8C7B6B"
+							style={styles.titleInput}
+							returnKeyType="next"
+						/>
+						<View style={styles.metaChip}>
+							<Text style={styles.metaChipText}>
+								Saved {new Date(prayer.createdAt).toLocaleDateString("en-US", {
+									month: "long",
+									day: "numeric",
+									year: "numeric",
+								})}
+							</Text>
+						</View>
+						<View style={styles.contentDivider} />
+						<Text style={styles.label}>Prayer</Text>
+						<TextInput
+							value={text}
+							onChangeText={setText}
+							placeholder="Write your prayer"
+							placeholderTextColor="#8C7B6B"
+							multiline
+							scrollEnabled={false}
+							textAlignVertical="top"
+							style={styles.bodyInput}
+						/>
+					</ScrollView>
+					<Pressable
+						onPress={handleSave}
+						disabled={isSaveDisabled}
+						style={({ pressed }) => [
+							styles.saveButton,
+							isSaveDisabled && styles.saveButtonDisabled,
+							pressed && styles.saveButtonPressed,
+						]}
+						accessibilityRole="button"
+						accessibilityLabel="Save prayer"
+					>
+						{isPending ? (
+							<ActivityIndicator color="#FFFFFF" />
+						) : (
+							<Text style={styles.saveButtonText}>Save prayer</Text>
+						)}
+					</Pressable>
+				</KeyboardAvoidingView>
 			)}
 		</SafeAreaView>
 	);
@@ -101,6 +185,7 @@ export default function PrayerDetailScreen() {
 
 const styles = StyleSheet.create({
 	container: { flex: 1, paddingHorizontal: 24, backgroundColor: "#FFFFFF" },
+	flex: { flex: 1 },
 	header: {
 		height: 64,
 		flexDirection: "row",
@@ -132,8 +217,15 @@ const styles = StyleSheet.create({
 		color: "#5F3A26",
 	},
 	headerSpacer: { width: 40 },
-	content: { paddingTop: 32, paddingBottom: 40 },
-	prayerTitle: {
+	content: { paddingTop: 28, paddingBottom: 24 },
+	label: {
+		fontFamily: "Inter_500Medium",
+		fontSize: 14,
+		color: "#6A4D39",
+	},
+	titleInput: {
+		marginTop: 6,
+		paddingVertical: 8,
 		fontFamily: "Lora_600SemiBold",
 		fontSize: 28,
 		lineHeight: 36,
@@ -141,7 +233,7 @@ const styles = StyleSheet.create({
 	},
 	metaChip: {
 		alignSelf: "flex-start",
-		marginTop: 16,
+		marginTop: 12,
 		paddingHorizontal: 11,
 		paddingVertical: 6,
 		borderRadius: 999,
@@ -152,13 +244,29 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		color: "#6A4D39",
 	},
-	contentDivider: { height: 1, marginTop: 28, backgroundColor: COLORS.ACCENT },
-	prayerBody: {
-		marginTop: 28,
+	contentDivider: { height: 1, marginVertical: 28, backgroundColor: COLORS.ACCENT },
+	bodyInput: {
+		marginTop: 8,
+		minHeight: 180,
+		paddingVertical: 8,
 		fontFamily: "Inter_400Regular",
 		fontSize: 16,
 		lineHeight: 28,
 		color: "#3F342C",
+	},
+	saveButton: {
+		marginBottom: 16,
+		borderRadius: 8,
+		paddingVertical: 14,
+		alignItems: "center",
+		backgroundColor: COLORS.PRIMARY,
+	},
+	saveButtonDisabled: { opacity: 0.5 },
+	saveButtonPressed: { opacity: 0.8 },
+	saveButtonText: {
+		fontFamily: "Inter_600SemiBold",
+		fontSize: 16,
+		color: "#FFFFFF",
 	},
 	centeredState: { flex: 1, alignItems: "center", justifyContent: "center" },
 	statusText: {

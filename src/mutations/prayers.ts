@@ -5,7 +5,13 @@ import {
 } from "@/api/prayers";
 import { isLocalMode } from "@/config/local-mode";
 import { useAuth } from "@/providers/auth-provider";
-import { createLocalPrayer, getLocalPrayers, type LocalPrayer } from "@/repositories/local-prayers";
+import {
+	createLocalPrayer,
+	getLocalPrayers,
+	type LocalPrayer,
+	type UpdateLocalPrayerPayload,
+	updateLocalPrayer,
+} from "@/repositories/local-prayers";
 import {
 	useMutation,
 	useQuery,
@@ -53,5 +59,31 @@ export function useLocalPrayersQuery() {
 		queryKey: ["local-prayers"],
 		queryFn: getLocalPrayers,
 		enabled: isLocalMode,
+	});
+}
+
+export function useUpdatePrayerMutation(
+	options?: UseMutationOptions<LocalPrayer, Error, UpdateLocalPrayerPayload>,
+): UseMutationResult<LocalPrayer, Error, UpdateLocalPrayerPayload> {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		...options,
+		mutationFn: async (payload) => {
+			if (!isLocalMode) {
+				throw new Error("Editing saved prayers is not available yet.");
+			}
+
+			return updateLocalPrayer(payload);
+		},
+		onSuccess: async (data, variables, onMutateResult, context) => {
+			await queryClient.invalidateQueries({ queryKey: ["local-prayers"] });
+			await options?.onSuccess?.(
+				data,
+				variables,
+				onMutateResult,
+				context,
+			);
+		},
 	});
 }

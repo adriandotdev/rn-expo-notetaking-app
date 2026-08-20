@@ -10,6 +10,10 @@ export type LocalPrayer = {
 };
 
 export type CreateLocalPrayerPayload = Pick<LocalPrayer, "title" | "text">;
+export type UpdateLocalPrayerPayload = Pick<
+	LocalPrayer,
+	"id" | "title" | "text"
+>;
 
 function isLocalPrayer(value: unknown): value is LocalPrayer {
 	if (!value || typeof value !== "object") return false;
@@ -71,6 +75,44 @@ export async function createLocalPrayer(
 	} catch {
 		throw new Error(
 			"Your prayer could not be saved on this device. Please try again.",
+		);
+	}
+}
+
+export async function updateLocalPrayer(
+	payload: UpdateLocalPrayerPayload,
+): Promise<LocalPrayer> {
+	const title = payload.title.trim();
+	const text = payload.text.trim();
+
+	if (!title || !text) {
+		throw new Error("Enter both a title and prayer before saving.");
+	}
+
+	const prayers = await getLocalPrayers();
+	const prayerIndex = prayers.findIndex((prayer) => prayer.id === payload.id);
+
+	if (prayerIndex === -1) {
+		throw new Error("This prayer could not be found on this device.");
+	}
+
+	const updatedPrayer: LocalPrayer = {
+		...prayers[prayerIndex],
+		title,
+		text,
+	};
+	const updatedPrayers = [...prayers];
+	updatedPrayers[prayerIndex] = updatedPrayer;
+
+	try {
+		await AsyncStorage.setItem(
+			LOCAL_PRAYERS_STORAGE_KEY,
+			JSON.stringify(updatedPrayers),
+		);
+		return updatedPrayer;
+	} catch {
+		throw new Error(
+			"Your prayer could not be updated on this device. Please try again.",
 		);
 	}
 }
