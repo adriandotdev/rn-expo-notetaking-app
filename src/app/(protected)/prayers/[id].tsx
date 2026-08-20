@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
 	},
 	backButtonPressed: { opacity: 0.75 },
 	backButtonText: {
-		marginTop: -4,
+		marginTop: -6,
 		fontFamily: "Inter_500Medium",
 		fontSize: 32,
 		color: "#5A4738",

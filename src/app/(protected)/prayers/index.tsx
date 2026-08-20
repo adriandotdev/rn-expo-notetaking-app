@@ -139,7 +139,9 @@ function PrayerCard({ title, text, meta, onPress }: PrayerCardProps) {
 				<View style={styles.prayerTopRow}>
 					<Text style={styles.prayerTitle}>{title}</Text>
 				</View>
-				<Text style={styles.prayerBody}>{text}</Text>
+				<Text style={styles.prayerBody} numberOfLines={5} ellipsizeMode="tail">
+					{text}
+				</Text>
 				<View style={styles.prayerBottomRow}>
 					<View style={styles.metaChip}>
 						<Text style={styles.metaChipText}>{meta}</Text>

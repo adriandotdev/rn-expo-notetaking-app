@@ -1,0 +1,6 @@
+interface:
+  display_name: "Prayer Haven Prayer Workflows"
+  short_description: "Maintain Prayer Haven prayer create, list, and detail flows"
+  default_prompt: "Use $prayer-haven-prayer-workflows to update a Prayer Haven prayer creation, list, or detail flow."
+policy:
+  allow_implicit_invocation: true
