@@ -168,10 +168,13 @@ export default function PrayerDetailScreen() {
 							placeholderTextColor="#8C7B6B"
 							style={styles.titleInput}
 							returnKeyType="next"
+							multiline
+							maxLength={300}
 						/>
 						<View style={styles.metaChip}>
 							<Text style={styles.metaChipText}>
-								Saved {new Date(prayer.createdAt).toLocaleDateString("en-US", {
+								Saved{" "}
+								{new Date(prayer.createdAt).toLocaleDateString("en-US", {
 									month: "long",
 									day: "numeric",
 									year: "numeric",
@@ -294,7 +297,11 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		color: "#6A4D39",
 	},
-	contentDivider: { height: 1, marginVertical: 28, backgroundColor: COLORS.ACCENT },
+	contentDivider: {
+		height: 1,
+		marginVertical: 28,
+		backgroundColor: COLORS.ACCENT,
+	},
 	bodyInput: {
 		marginTop: 8,
 		minHeight: 180,
