@@ -1,5 +1,5 @@
+import { COLORS } from "@/constants/colors";
 import { useCreatePrayerMutation } from "@/mutations/prayers";
-import {} from "@expo/ui";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -52,38 +52,33 @@ export default function CreatePrayerScreen() {
 				style={styles.flex}
 			>
 				<ScrollView
-					contentContainerStyle={styles.formContent}
+					contentContainerStyle={styles.content}
+					showsVerticalScrollIndicator={false}
 					keyboardShouldPersistTaps="handled"
 					keyboardDismissMode={
 						Platform.OS === "ios" ? "interactive" : "on-drag"
 					}
 					automaticallyAdjustKeyboardInsets
 				>
-					<View style={styles.fieldGroup}>
-						<Text style={styles.label}>Title</Text>
-						<TextInput
-							value={title}
-							onChangeText={setTitle}
-							placeholder="Enter prayer title"
-							placeholderTextColor="#8C7B6B"
-							style={styles.title}
-							returnKeyType="next"
-						/>
-					</View>
-
-					<View style={styles.fieldGroup}>
-						<Text style={styles.label}>Prayer</Text>
-						<TextInput
-							value={prayer}
-							onChangeText={setPrayer}
-							placeholder="Write your prayer"
-							placeholderTextColor="#8C7B6B"
-							multiline
-							scrollEnabled={false}
-							textAlignVertical="top"
-							style={[styles.input, styles.textarea]}
-						/>
-					</View>
+					<TextInput
+						value={title}
+						onChangeText={setTitle}
+						placeholder="Prayer title"
+						placeholderTextColor="#8C7B6B"
+						style={styles.titleInput}
+						returnKeyType="next"
+					/>
+					<View style={styles.contentDivider} />
+					<TextInput
+						value={prayer}
+						onChangeText={setPrayer}
+						placeholder="Write your prayer"
+						placeholderTextColor="#8C7B6B"
+						multiline
+						scrollEnabled={false}
+						textAlignVertical="top"
+						style={styles.bodyInput}
+					/>
 				</ScrollView>
 				<Pressable
 					onPress={handleSubmit}
@@ -113,59 +108,42 @@ export default function CreatePrayerScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 24,
+		paddingHorizontal: 24,
+		paddingTop: 24,
 		backgroundColor: "#FFFFFF",
 	},
 	flex: {
 		flex: 1,
 	},
-	formContent: {
-		gap: 24,
-		paddingBottom: 24,
-	},
+	content: { paddingBottom: 24 },
 	heading: {
 		fontSize: 24,
 		fontFamily: "Lora_600SemiBold",
 		color: "#5F3A26",
 		marginBottom: 16,
 	},
-	fieldGroup: {
-		gap: 8,
+	titleInput: {
+		paddingVertical: 8,
+		fontFamily: "Lora_600SemiBold",
+		fontSize: 28,
+		lineHeight: 36,
+		color: "#5F3A26",
 	},
-	label: {
-		fontSize: 14,
-		fontFamily: "Inter_500Medium",
-		color: "#6A4D39",
+	contentDivider: {
+		height: 1,
+		marginVertical: 28,
+		backgroundColor: COLORS.ACCENT,
 	},
-	title: {
-		borderWidth: 0,
-		borderRadius: 0,
-		paddingHorizontal: 12,
-		paddingVertical: 10,
-		fontSize: 16,
-		fontFamily: "Inter_700Bold",
-		color: "#3F342C",
-		backgroundColor: "transparent",
-	},
-	input: {
-		borderWidth: 0,
-		borderRadius: 0,
-		paddingHorizontal: 12,
-		paddingVertical: 10,
+	bodyInput: {
+		minHeight: 180,
+		paddingVertical: 8,
 		fontSize: 16,
 		fontFamily: "Inter_400Regular",
 		color: "#3F342C",
-		backgroundColor: "transparent",
-		lineHeight: 32,
-	},
-	textarea: {
-		minHeight: 140,
-		// maxHeight: Platform.OS === "android" ? 800 : 500,
-		paddingTop: 12,
-		paddingBottom: 40,
+		lineHeight: 28,
 	},
 	submitButton: {
-		backgroundColor: "#5F3A26",
+		backgroundColor: COLORS.PRIMARY,
 		borderRadius: 8,
 		paddingVertical: 14,
 		alignItems: "center",

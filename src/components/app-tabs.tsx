@@ -9,7 +9,7 @@ export default function AppTabs() {
 
 	return (
 		<NativeTabs
-			backgroundColor={colors.background}
+			backgroundColor={"black"}
 			indicatorColor={colors.backgroundElement}
 			labelStyle={{ selected: { color: colors.text } }}
 		>
