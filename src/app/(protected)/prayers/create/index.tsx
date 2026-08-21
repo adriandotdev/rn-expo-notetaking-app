@@ -67,6 +67,8 @@ export default function CreatePrayerScreen() {
 						placeholderTextColor="#8C7B6B"
 						style={styles.titleInput}
 						returnKeyType="next"
+						multiline
+						maxLength={300}
 					/>
 					<View style={styles.contentDivider} />
 					<TextInput
@@ -131,7 +133,7 @@ const styles = StyleSheet.create({
 	},
 	contentDivider: {
 		height: 1,
-		marginVertical: 28,
+		marginVertical: 18,
 		backgroundColor: COLORS.ACCENT,
 	},
 	bodyInput: {
