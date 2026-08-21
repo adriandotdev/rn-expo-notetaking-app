@@ -1,8 +1,19 @@
 import { isLocalMode } from "@/config/local-mode";
 import { COLORS } from "@/constants/colors";
-import { useLocalPrayersQuery } from "@/mutations/prayers";
+import {
+	useDeletePrayerMutation,
+	useLocalPrayersQuery,
+} from "@/mutations/prayers";
 import { useRouter } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+	ActivityIndicator,
+	Alert,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function Prayers() {
 	const router = useRouter();
@@ -11,6 +22,8 @@ export default function Prayers() {
 		error: localPrayersError,
 		isLoading,
 	} = useLocalPrayersQuery();
+	const { mutate: deletePrayer, isPending: isDeleting } =
+		useDeletePrayerMutation();
 	const todayLabel = new Date().toLocaleDateString("en-US", {
 		weekday: "long",
 		month: "short",
@@ -33,6 +46,29 @@ export default function Prayers() {
 
 	const handleOpenPrayer = (id: string) => {
 		router.push({ pathname: "/prayers/[id]", params: { id } });
+	};
+
+	const handleDeletePrayer = (id: string, title: string) => {
+		if (isDeleting) return;
+
+		Alert.alert(
+			"Delete prayer?",
+			`“${title}” will be permanently removed from this device.`,
+			[
+				{ text: "Cancel", style: "cancel" },
+				{
+					text: "Delete",
+					style: "destructive",
+					onPress: () => {
+						deletePrayer(id, {
+							onError: (deleteError: Error) => {
+								Alert.alert("Unable to delete prayer", deleteError.message);
+							},
+						});
+					},
+				},
+			],
+		);
 	};
 
 	return (
@@ -100,6 +136,8 @@ export default function Prayers() {
 									year: "numeric",
 								})}
 								onPress={() => handleOpenPrayer(prayer.id)}
+								onDelete={() => handleDeletePrayer(prayer.id, prayer.title)}
+								isDeleting={isDeleting}
 							/>
 						))
 					)
@@ -120,35 +158,69 @@ type PrayerCardProps = {
 	text: string;
 	meta: string;
 	onPress?: () => void;
+	onDelete?: () => void;
+	isDeleting?: boolean;
 };
 
-function PrayerCard({ title, text, meta, onPress }: PrayerCardProps) {
+function PrayerCard({
+	title,
+	text,
+	meta,
+	onPress,
+	onDelete,
+	isDeleting = false,
+}: PrayerCardProps) {
 	return (
-		<Pressable
-			onPress={onPress}
-			disabled={!onPress}
-			accessibilityRole={onPress ? "button" : undefined}
-			accessibilityLabel={onPress ? `Open prayer: ${title}` : undefined}
-			style={({ pressed }) => ({
-				...styles.prayerCardWrap,
-				transform: [{ scale: pressed && onPress ? 0.98 : 1 }],
-			})}
-		>
+		<View style={styles.prayerCardWrap}>
 			<View style={styles.prayerCardGlow} />
 			<View style={styles.prayerCard}>
-				<View style={styles.prayerTopRow}>
-					<Text style={styles.prayerTitle}>{title}</Text>
-				</View>
-				<Text style={styles.prayerBody} numberOfLines={5} ellipsizeMode="tail">
-					{text}
-				</Text>
+				<Pressable
+					onPress={onPress}
+					disabled={!onPress || isDeleting}
+					accessibilityRole={onPress ? "button" : undefined}
+					accessibilityLabel={onPress ? `Open prayer: ${title}` : undefined}
+					style={({ pressed }) => [
+						styles.prayerContentButton,
+						pressed && onPress && styles.prayerContentButtonPressed,
+					]}
+				>
+					<View style={styles.prayerTopRow}>
+						<Text style={styles.prayerTitle}>{title}</Text>
+					</View>
+					<Text
+						style={styles.prayerBody}
+						numberOfLines={5}
+						ellipsizeMode="tail"
+					>
+						{text}
+					</Text>
+				</Pressable>
 				<View style={styles.prayerBottomRow}>
 					<View style={styles.metaChip}>
 						<Text style={styles.metaChipText}>{meta}</Text>
 					</View>
+					{onDelete ? (
+						<Pressable
+							onPress={onDelete}
+							disabled={isDeleting}
+							accessibilityRole="button"
+							accessibilityLabel={`Delete prayer: ${title}`}
+							style={({ pressed }) => [
+								styles.deleteCardButton,
+								isDeleting && styles.deleteCardButtonDisabled,
+								pressed && styles.deleteCardButtonPressed,
+							]}
+						>
+							{isDeleting ? (
+								<ActivityIndicator color={COLORS.ERROR} size="small" />
+							) : (
+								<Text style={styles.deleteCardButtonText}>Delete</Text>
+							)}
+						</Pressable>
+					) : null}
 				</View>
 			</View>
-		</Pressable>
+		</View>
 	);
 }
 
@@ -269,6 +341,8 @@ const styles = StyleSheet.create({
 		shadowRadius: 22,
 		elevation: 4,
 	},
+	prayerContentButton: { borderRadius: 12 },
+	prayerContentButtonPressed: { opacity: 0.72 },
 	prayerTopRow: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -308,6 +382,23 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		gap: 8,
 		flexWrap: "wrap",
+	},
+	deleteCardButton: {
+		marginLeft: "auto",
+		minHeight: 44,
+		justifyContent: "center",
+		paddingHorizontal: 14,
+		borderRadius: 999,
+		borderWidth: 1,
+		borderColor: COLORS.ERROR,
+		backgroundColor: "#FFFFFF",
+	},
+	deleteCardButtonDisabled: { opacity: 0.5 },
+	deleteCardButtonPressed: { opacity: 0.72 },
+	deleteCardButtonText: {
+		fontFamily: "Inter_600SemiBold",
+		fontSize: 12,
+		color: COLORS.ERROR,
 	},
 	metaChip: {
 		paddingHorizontal: 11,

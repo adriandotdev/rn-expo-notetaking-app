@@ -1,10 +1,10 @@
 {
 	"expo": {
 		"name": "Prayers",
-		"slug": "rn-practice-v2",
+		"slug": "prayer",
 		"version": "1.0.0",
 		"orientation": "portrait",
-		"icon": "./assets/images/icon.png",
+		"icon": "./assets/images/prayer-app-icon.png",
 		"scheme": "rnpracticev2",
 		"userInterfaceStyle": "automatic",
 		"ios": {
@@ -14,9 +14,8 @@
 		"android": {
 			"package": "com.prayerhaven.app",
 			"adaptiveIcon": {
-				"backgroundColor": "#E6F4FE",
-				"foregroundImage": "./assets/images/android-icon-foreground.png",
-				"backgroundImage": "./assets/images/android-icon-background.png",
+				"foregroundImage": "./assets/images/catholic-app-icon.png",
+				"backgroundColor": "#051833",
 				"monochromeImage": "./assets/images/android-icon-monochrome.png"
 			},
 			"predictiveBackGestureEnabled": false
@@ -31,7 +30,7 @@
 				"expo-splash-screen",
 				{
 					"backgroundColor": "#208AEF",
-					"image": "./assets/images/splash-icon.png",
+					"image": "./assets/images/prayer-app-icon.png",
 					"imageWidth": 76
 				}
 			],
@@ -47,7 +46,7 @@
 		"extra": {
 			"router": {},
 			"eas": {
-				"projectId": "4aacbe1a-b419-418e-91bb-95db31a0e0fb"
+				"projectId": "25f97fa0-dfe8-4c00-9ea1-a64233c6565c"
 			}
 		},
 		"owner": "httpsdotjs"

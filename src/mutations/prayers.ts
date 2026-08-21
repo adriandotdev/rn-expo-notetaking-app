@@ -7,6 +7,7 @@ import { isLocalMode } from "@/config/local-mode";
 import { useAuth } from "@/providers/auth-provider";
 import {
 	createLocalPrayer,
+	deleteLocalPrayer,
 	getLocalPrayers,
 	type LocalPrayer,
 	type UpdateLocalPrayerPayload,
@@ -75,6 +76,32 @@ export function useUpdatePrayerMutation(
 			}
 
 			return updateLocalPrayer(payload);
+		},
+		onSuccess: async (data, variables, onMutateResult, context) => {
+			await queryClient.invalidateQueries({ queryKey: ["local-prayers"] });
+			await options?.onSuccess?.(
+				data,
+				variables,
+				onMutateResult,
+				context,
+			);
+		},
+	});
+}
+
+export function useDeletePrayerMutation(
+	options?: UseMutationOptions<void, Error, string>,
+): UseMutationResult<void, Error, string> {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		...options,
+		mutationFn: async (id) => {
+			if (!isLocalMode) {
+				throw new Error("Deleting saved prayers is not available yet.");
+			}
+
+			return deleteLocalPrayer(id);
 		},
 		onSuccess: async (data, variables, onMutateResult, context) => {
 			await queryClient.invalidateQueries({ queryKey: ["local-prayers"] });

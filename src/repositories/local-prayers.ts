@@ -116,3 +116,23 @@ export async function updateLocalPrayer(
 		);
 	}
 }
+
+export async function deleteLocalPrayer(id: string): Promise<void> {
+	const prayers = await getLocalPrayers();
+	const updatedPrayers = prayers.filter((prayer) => prayer.id !== id);
+
+	if (updatedPrayers.length === prayers.length) {
+		throw new Error("This prayer could not be found on this device.");
+	}
+
+	try {
+		await AsyncStorage.setItem(
+			LOCAL_PRAYERS_STORAGE_KEY,
+			JSON.stringify(updatedPrayers),
+		);
+	} catch {
+		throw new Error(
+			"This prayer could not be deleted from this device. Please try again.",
+		);
+	}
+}

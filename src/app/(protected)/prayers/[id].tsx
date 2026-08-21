@@ -1,5 +1,6 @@
 import { COLORS } from "@/constants/colors";
 import {
+	useDeletePrayerMutation,
 	useLocalPrayersQuery,
 	useUpdatePrayerMutation,
 } from "@/mutations/prayers";
@@ -30,7 +31,10 @@ export default function PrayerDetailScreen() {
 	const [title, setTitle] = useState("");
 	const [text, setText] = useState("");
 	const initializedPrayerId = useRef<string | undefined>(undefined);
-	const { mutate: updatePrayer, isPending } = useUpdatePrayerMutation();
+	const { mutate: updatePrayer, isPending: isUpdating } =
+		useUpdatePrayerMutation();
+	const { mutate: deletePrayer, isPending: isDeleting } =
+		useDeletePrayerMutation();
 
 	useEffect(() => {
 		if (!prayer || initializedPrayerId.current === prayer.id) return;
@@ -50,7 +54,7 @@ export default function PrayerDetailScreen() {
 	}
 
 	function handleSave() {
-		if (!prayerId) return;
+		if (!prayerId || isDeleting) return;
 
 		updatePrayer(
 			{ id: prayerId, title, text },
@@ -66,7 +70,34 @@ export default function PrayerDetailScreen() {
 		);
 	}
 
-	const isSaveDisabled = isPending || !title.trim() || !text.trim();
+	function handleDelete() {
+		if (!prayerId || isUpdating || isDeleting) return;
+
+		Alert.alert(
+			"Delete prayer?",
+			`“${prayer?.title ?? "This prayer"}” will be permanently removed from this device.`,
+			[
+				{ text: "Cancel", style: "cancel" },
+				{
+					text: "Delete",
+					style: "destructive",
+					onPress: () => {
+						deletePrayer(prayerId, {
+							onSuccess: () => {
+								router.replace("/prayers");
+							},
+							onError: (deleteError: Error) => {
+								Alert.alert("Unable to delete prayer", deleteError.message);
+							},
+						});
+					},
+				},
+			],
+		);
+	}
+
+	const isActionPending = isUpdating || isDeleting;
+	const isSaveDisabled = isActionPending || !title.trim() || !text.trim();
 
 	return (
 		<SafeAreaView
@@ -160,23 +191,42 @@ export default function PrayerDetailScreen() {
 							style={styles.bodyInput}
 						/>
 					</ScrollView>
-					<Pressable
-						onPress={handleSave}
-						disabled={isSaveDisabled}
-						style={({ pressed }) => [
-							styles.saveButton,
-							isSaveDisabled && styles.saveButtonDisabled,
-							pressed && styles.saveButtonPressed,
-						]}
-						accessibilityRole="button"
-						accessibilityLabel="Save prayer"
-					>
-						{isPending ? (
-							<ActivityIndicator color="#FFFFFF" />
-						) : (
-							<Text style={styles.saveButtonText}>Save prayer</Text>
-						)}
-					</Pressable>
+					<View style={styles.actions}>
+						<Pressable
+							onPress={handleSave}
+							disabled={isSaveDisabled}
+							style={({ pressed }) => [
+								styles.saveButton,
+								isSaveDisabled && styles.saveButtonDisabled,
+								pressed && styles.saveButtonPressed,
+							]}
+							accessibilityRole="button"
+							accessibilityLabel="Save prayer"
+						>
+							{isUpdating ? (
+								<ActivityIndicator color="#FFFFFF" />
+							) : (
+								<Text style={styles.saveButtonText}>Save prayer</Text>
+							)}
+						</Pressable>
+						<Pressable
+							onPress={handleDelete}
+							disabled={isActionPending}
+							style={({ pressed }) => [
+								styles.deleteButton,
+								isActionPending && styles.deleteButtonDisabled,
+								pressed && styles.deleteButtonPressed,
+							]}
+							accessibilityRole="button"
+							accessibilityLabel="Delete prayer permanently"
+						>
+							{isDeleting ? (
+								<ActivityIndicator color={COLORS.ERROR} />
+							) : (
+								<Text style={styles.deleteButtonText}>Delete prayer</Text>
+							)}
+						</Pressable>
+					</View>
 				</KeyboardAvoidingView>
 			)}
 		</SafeAreaView>
@@ -254,8 +304,8 @@ const styles = StyleSheet.create({
 		lineHeight: 28,
 		color: "#3F342C",
 	},
+	actions: { gap: 12, marginBottom: 16 },
 	saveButton: {
-		marginBottom: 16,
 		borderRadius: 8,
 		paddingVertical: 14,
 		alignItems: "center",
@@ -267,6 +317,21 @@ const styles = StyleSheet.create({
 		fontFamily: "Inter_600SemiBold",
 		fontSize: 16,
 		color: "#FFFFFF",
+	},
+	deleteButton: {
+		borderRadius: 8,
+		paddingVertical: 14,
+		alignItems: "center",
+		borderWidth: 1,
+		borderColor: COLORS.ERROR,
+		backgroundColor: "#FFFFFF",
+	},
+	deleteButtonDisabled: { opacity: 0.5 },
+	deleteButtonPressed: { opacity: 0.75 },
+	deleteButtonText: {
+		fontFamily: "Inter_600SemiBold",
+		fontSize: 16,
+		color: COLORS.ERROR,
 	},
 	centeredState: { flex: 1, alignItems: "center", justifyContent: "center" },
 	statusText: {
