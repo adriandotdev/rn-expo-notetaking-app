@@ -22,6 +22,13 @@ export default function AppTabs() {
 					renderingMode="template"
 				/>
 			</NativeTabs.Trigger>
+			<NativeTabs.Trigger name="learn">
+				<NativeTabs.Trigger.Label>Learn</NativeTabs.Trigger.Label>
+				<NativeTabs.Trigger.Icon
+					sf={{ default: "book", selected: "book.fill" }}
+					md="menu_book"
+				/>
+			</NativeTabs.Trigger>
 		</NativeTabs>
 	);
 }
